@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="pastel">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Application Tracker</title>
+
+    <title>Job application tracker</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-<Style>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <Style>
 
     body{
         font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -26,44 +31,154 @@
     .tab{
         border-radius: 6px !important;
     }
+
 </Style>
+
 </head>
-<body class="bg-base-300 min-h-screen">
-    <div class="navbar bg-base-100 border-b border-base-content/10 px-4md:px-8">
-        <div class="navbarstarted">
-            <span class="text-xl font-bold text-primary tracking-tight">
+<body>
+    <header class="w-full bg-base-100 border border-base-content/10">
+        <div class="max-w-4xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+            <span class="text-xl font-bold text-primary tracking-tight"> 
                 Job Application Tracker
             </span>
         </div>
-        <div class="navbarfinished">
-            <div class="badge badge-neutral badge-outline text-xs font-medium hidden sm:flex"></div>
-        </div>
-    </div>
+    </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8 pb-20">
+    <main class=" w-full max-w-4xl mx-auto px-4 md:px-8 py-8 pb-20">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             <div class="card bg-base-100 border border-base-content/10 shadow-sm">
                 <div class="card-body p-5">
                     <p class="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-1"> Total</p>
-                    <p class="font-bold text-4xl text-base-content" id="totalcount">0</p>
+                    <p class="font-bold text-4xl text-base-error" id="totalcount">0</p>
                 </div>
             </div>
 
             <div class="card bg-base-100 border border-success/30 shadow-sm">
                 <div class="card-body p-5">
                     <p class="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-1"> Interview</p>
-                    <p class="font-bold text-4xl text-base-content" id="totalInterviews">0</p>
+                    <p class="font-bold text-4xl text-success" id="totalinterviews">0</p>
                 </div>
             </div>
 
-            <div class="card bg-base-100 border border-success/30 shadow-sm">
+            <div class="card bg-base-100 border border-error/30 shadow-sm">
                 <div class="card-body p-5">
-                    <p class="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-1"> Rejected </p>
-                    <p class="font-bold text-4xl text-base-content" id="totalcount">0</p>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-base-error/40 mb-1"> Rejected </p>
+                    <p class="font-bold text-4xl text-base-error" id="totalrejections">0</p>
                 </div>
             </div>
         </div>
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-semibold text-base-content text-base">Available Jobs</h2>
+            <span class="badge badge-ghost text-xs font-medium" id="totaljobs">0 Jobs</span>
+        </div>
+
+        <div role = "tablist" class = "tabs tabs-boxed bg-base-100 w-fit p-1 gap-1">
+            <button role = "tab" class = "tab tab-active text-sm font-medium" data-tab = "all">
+                All
+            </button>
+
+            <button role="tab" class="tab text-sm font-medium" data-tab="interview">
+                Interview
+            </button>
+
+            <button role="tab" class="tab text-sm font-medium" data-tab="rejected" >
+                Rejected
+            </button>
+        </div>
+        <div id="joblist" class="flex flex-col gap-3"></div>
     </main>
+    <script>
+
+        let jobs = [
+        
+        {
+            id: 1,
+            company: 'CloudStrem Tech',
+            position: 'Senior Frontend Developer',
+            location: 'Austin, Texas',
+            type: 'Full-Time',
+            salary: '$140,000 - 185,000',
+            description: "Design and implement scalable user interfaces using React and Tailwind CSS. Lead a team of junior developers in migrating legacy codebases.",
+            status: null
+        },
+
+        {
+            id: 2,
+            company: "WebFlow Agency",
+            position: "Web Designer & Developer",
+            location: "Los Angeles, CA",
+            type: "Part-time",
+            salary: "$60,000 - $70,000",
+            description: "Design and develop visually striking websites for a portfolio of marketing clients. Proficiency in Webflow, HTML/CSS, and Figma required. Flexible hours, remote-friendly.",
+            status: null
+        },
+
+        {
+            id: 3,
+            company: "Pixel Perfect Studio",
+            position: "UI/UX Designer",
+            location: "Remote",
+            type: "Part-time",
+            salary: "$60,000 - $80,000",
+            description: "Create stunning wireframes and prototypes for mobile applications. Collaborate closely with the React Native engineering team.",
+            status: null
+        },
+
+        {
+            id: 4,
+            company: "CyberShield AI",
+            position: "Security Software Engineer",
+            location: "San Francisco, CA",
+            type: "Part-time",
+            salary: "$160,000 - $210,000",
+            description: "Build automated threat detection systems using machine learning. Conduct regular code audits and penetration testing.",
+            status: null
+        },
+
+        {
+            id: 5,
+            company: "NextGen Logistics",
+            position: "Mobile App Developer",
+            location: "Chicago, IL",
+            type: "Full-time",
+            salary: "$125,000 - $165,000",
+            description: "Focus on real-time tracking features for logistics drivers using Flutter or React Native. Optimize app performance for low-bandwidth areas.",
+            status: null
+        },
+
+        {
+            id: 6,
+            company: "HealthBridge Systems",
+            position: "DevOps Engineer",
+            location: "New York, NY",
+            type: "Full-time",
+            salary: "$135,000 - $180,000",
+            description: "Manage AWS infrastructure and CI/CD pipelines. Focus on automating server deployments and improving system reliability.",
+            status: null
+        },
+
+        {
+            id: 7,
+            company: "GreenGrid Energy",
+            position: "Full Stack Developer",
+            location: "Denver, CO",
+            type: "Full-time",
+            salary: "$115,000 - $155,000",
+            description: "Work on IoT dashboards that monitor renewable energy output. Experience with Python, Django, and Vue.js is highly preferred.",
+            status: null
+        },
+
+        {
+            id: 8,
+            company: 'Fintech Global',
+            position: "Backend Engineer (Node.js)",
+            location: "Remote",
+            type: "Contract",
+            salary: '$90 - $120 ',
+            description: "Develop high-performance APIs for financial transactions. Ensure security compliance and integrate with third-party payment gateways.",
+            status: null
+        }
+        ];
 </body>
 </html>
-
