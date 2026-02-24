@@ -32,6 +32,11 @@
         border-radius: 6px !important;
     }
 
+    .tab.tab-active {
+
+        background-color: darkturquoise;
+    }
+
 </Style>
 
 </head>
@@ -63,7 +68,7 @@
             <div class="card bg-base-100 border border-error/30 shadow-sm">
                 <div class="card-body p-5">
                     <p class="text-xs font-semibold uppercase tracking-widest text-base-error/40 mb-1"> Rejected </p>
-                    <p class="font-bold text-4xl text-base-error" id="totalrejections">0</p>
+                    <p class="font-bold text-4xl text-red-500" id="totalrejections">0</p>
                 </div>
             </div>
         </div>
@@ -180,5 +185,134 @@
             status: null
         }
         ];
+
+                let activeTab = 'all';
+                
+                function render(){
+                    const JobInterview = jobs.filter(j => j.status === 'interview');
+                    const JobRejected = jobs.filter(j => j.status === 'rejected');
+                    
+                    document.getElementById('totalcount').textContent = jobs.length;
+                    document.getElementById('totalinterviews').textContent = JobInterview.length;
+                    document.getElementById('totalrejections').textContent = JobRejected.length;
+                    
+                    const visible = activeTab === 'all' ? jobs : jobs.filter( j => j.status === activeTab);
+                    const n = visible.length;
+                    document.getElementById('totaljobs').textContent = `${n} Job${n !== 1 ? 's' : ''}`;
+            
+                    const list = document.getElementById('joblist');
+                    
+                    if(n===0){
+                        
+                        const tabName = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+                        
+                        list.innerHTML = `<div class = "flex flex-col items-center justify-center py-24 gap-3 text-center slide">
+                            <div class = "bg-base-100 rounded-full p-6 border border-base-content/10 mb-2">
+                                <svg class = "w-12 h-12 text-base-content/20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke-width = "1.5" stroke-linecap = "round" stroke-linejoin = "round">
+                                    <rect x = "2" y = "7" width = "20" height = "14" rx = "2"/>
+                                    <path d = "M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+                                    <line x1 = "12" y1="12" x2="12" y2 = "16"/>
+                                    <line x1 = "10" y1 = "14" x2 = "14" y2 = "14"/>
+                                </svg>
+                            </div>
+                            
+                            <p class = "text-base font-semibold text-base-content"> No jobs available</p>
+                            
+                            <p class = "text-sm text-base-content/40 max-w-xs"> No application marked as "${tabName}" yet. Go to the All tab and update a job status.</p>
+                        
+                        </div>`;
+                        return;
+                    }
+                    
+                    list.innerHTML = visible.map((job, i) => {
+                        
+                        const interviewActive = job.status === 'interview';
+                        const rejectedActive = job.status === 'rejected';
+                        
+                        const statusBadge = job.status ? `<div class = "badge ${job.status === 'interview' ? 'badge-success' : 'badge-error' } badge-sm font-semibold uppercase tracking-wide"> ${job.status}</div>`
+                        :'';
+                        return `
+                        
+                        <div class = "card bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all slide" style = "animation-delay:${i * 0.05}s" data-id = "${job.id}">
+                            
+                            <div class="card-body p-5 gap-3">
+                                
+                                <div class="flex items-start justify-between gap-3">
+                                    
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class = "font-semibold text-base-content text-[0.95rem] leading-snug">${job.company}</h3>
+                                        
+                                        <p class = "text-sm text-base-content/50 mt-0.5">${job.position}</p>
+                                    
+                                    </div>
+                                    
+                                    <button
+                                    onclick = "JobDelete(${job.id})"
+                                    class="btn btn-ghost btn-xs btn-square text-base-content/30 hover:text-error hover:bg-error/10 border border-base-content/10"
+                                    
+                                    title="Delete">
+                                    
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                    <path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/>
+                                </svg>
+                            
+                            </button>
+                        </div>
+                
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-ghost badge-sm text-xs font-medium">
+                                ${job.location}
+                            </span>
+                            
+                            <span class="badge badge-ghost badge-sm text-xs font-medium">
+                                ${job.type}
+                            </span>
+                            
+                            <span class="badge badge-primary badge-sm badge-outline text-xs font-semibold">
+                                <svg class="w-3 h-3 mr-1 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                                </svg>
+                                
+                                ${job.salary}
+                            </span>
+                        </div>
+                        
+                        ${statusBadge}
+                        
+                        <p class="text-sm text-base-content/50 leading-relaxed">${job.description}</p>
+                        
+                        <div class="flex gap-2 pt-1 border-t border-base-content/5 flex-wrap">
+                            
+                            <button
+                            onclick="setStatus(${job.id}, 'interview')"
+                            class="btn btn-sm flex-1 min-w-[110px] border-success/50 text-success hover:bg-success hover:text-success-content hover:border-success ${interviewActive ? 'bg-success text-success-content border-success' : 'btn-ghost'}">
+                            
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Interview
+                            </button>
+                            
+                            <button
+                            onclick="setStatus(${job.id}, 'rejected')"
+                            class="btn btn-sm flex-1 min-w-[110px] border-error/50 text-error hover:bg-error hover:text-error-content hover:border-error ${rejectedActive ? 'bg-error text-error-content border-error' : 'btn-ghost'}">
+                            
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            
+                            Rejected
+                        </button>
+            </div>
+        </div>
+</div>`;
+}).join('');
+}
+    render();
+    </script>
 </body>
 </html>
